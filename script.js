@@ -1,9 +1,14 @@
 const premiumKey = "derivpredictai-premium";
 const userKey = "derivpredictai-user";
+const authModeKey = "derivpredictai-auth-mode";
 const planKey = "derivpredictai-plan";
 
-// These are intentionally empty until real Stripe Payment Links are added.
-// Never put Stripe secret keys in this browser-only file.
+const appConfig = {
+  mode: "demo",
+  realAuthConfigured: false,
+  realAuthProvider: "Supabase / Firebase",
+};
+
 const planUrls = {
   starter: "",
   pro: "",
@@ -14,6 +19,41 @@ const planNames = {
   starter: "Starter",
   pro: "Pro",
   elite: "Elite",
+};
+
+const getStoredMode = () => {
+  try {
+    return localStorage.getItem(authModeKey) || "demo";
+  } catch (error) {
+    console.warn("Auth mode could not be read.", error);
+    return "demo";
+  }
+};
+
+const setAuthMode = (mode) => {
+  const normalisedMode = mode === "real" ? "real" : "demo";
+  appConfig.mode = normalisedMode;
+  try {
+    localStorage.setItem(authModeKey, normalisedMode);
+  } catch (error) {
+    console.warn("Auth mode could not be saved.", error);
+  }
+
+  document.querySelectorAll(".mode-btn").forEach((button) => {
+    const isActive = button.dataset.mode === normalisedMode;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  const providerText = document.getElementById("providerStatus");
+  if (providerText) {
+    providerText.textContent =
+      normalisedMode === "real"
+        ? appConfig.realAuthConfigured
+          ? `${appConfig.realAuthProvider} connected`
+          : `${appConfig.realAuthProvider} not connected yet`
+        : "Demo authentication enabled";
+  }
 };
 
 const setPremiumState = (isPremium) => {
@@ -32,6 +72,27 @@ const setPremiumState = (isPremium) => {
   }
 };
 
+const updateUserBadge = () => {
+  const badge = document.getElementById("userBadge");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  try {
+    const user = JSON.parse(localStorage.getItem(userKey) || "null");
+    const loggedIn = !!user?.loggedIn;
+
+    if (badge) {
+      badge.textContent = loggedIn ? `Signed in as ${user.email}` : "Not signed in";
+      badge.classList.toggle("hidden", !loggedIn);
+    }
+
+    if (logoutBtn) {
+      logoutBtn.classList.toggle("hidden", !loggedIn);
+    }
+  } catch (error) {
+    console.warn("User badge could not be updated.", error);
+  }
+};
+
 const initPremiumState = () => {
   let saved = "false";
   try {
@@ -40,10 +101,10 @@ const initPremiumState = () => {
     console.warn("Premium state could not be read.", error);
   }
   setPremiumState(saved === "true");
+  updateUserBadge();
 };
 
 const showMessage = (message) => {
-  // A small, non-blocking message avoids broken external checkout errors.
   let notice = document.getElementById("siteNotice");
   if (!notice) {
     notice = document.createElement("div");
@@ -71,15 +132,14 @@ const openCheckout = (plan) => {
     return;
   }
 
-  // The previous test Stripe links were invalid/placeholder links. Until real
-  // Payment Links are configured, keep the demo usable instead of opening an error page.
   try {
     localStorage.setItem(planKey, plan);
   } catch (error) {
     console.warn("Selected plan could not be saved.", error);
   }
+
   setPremiumState(true);
-  showMessage(`${name} selected in demo mode. Add a real Stripe Payment Link before charging customers.`);
+  showMessage(`${name} selected in demo mode. Connect a real Stripe Payment Link before charging customers.`);
 };
 
 const openLoginModal = () => {
@@ -92,25 +152,21 @@ const closeLoginModal = () => {
   if (modal) modal.classList.add("hidden");
 };
 
-const year = document.getElementById("year");
-if (year) year.textContent = new Date().getFullYear();
+const logout = () => {
+  try {
+    localStorage.removeItem(userKey);
+  } catch (error) {
+    console.warn("User could not be logged out.", error);
+  }
+  setPremiumState(false);
+  updateUserBadge();
+  showMessage("You have been logged out.");
+};
 
-document.getElementById("demoUnlock")?.addEventListener("click", () => {
-  setPremiumState(true);
-  showMessage("Premium demo access enabled.");
-});
-
-document.getElementById("loginBtn")?.addEventListener("click", openLoginModal);
-document.getElementById("closeLoginModal")?.addEventListener("click", closeLoginModal);
-
-document.getElementById("loginForm")?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
-
+const handleDemoLogin = (email, password) => {
   if (!email || !password) {
     showMessage("Enter both your email and password.");
-    return;
+    return false;
   }
 
   try {
@@ -119,9 +175,78 @@ document.getElementById("loginForm")?.addEventListener("submit", (event) => {
     console.warn("Demo user could not be saved.", error);
   }
   setPremiumState(true);
+  updateUserBadge();
+  return true;
+};
+
+const handleRealLogin = async (email, password) => {
+  if (!appConfig.realAuthConfigured) {
+    showMessage("Real auth is not configured yet. Connect Firebase or Supabase first.");
+    return false;
+  }
+
+  if (window.realAuthLogin && typeof window.realAuthLogin === "function") {
+    const result = await window.realAuthLogin(email, password);
+    if (result?.success) {
+      try {
+        localStorage.setItem(userKey, JSON.stringify({ email, loggedIn: true }));
+      } catch (error) {
+        console.warn("Real user could not be saved.", error);
+      }
+      setPremiumState(true);
+      updateUserBadge();
+      return true;
+    }
+    showMessage(result?.message || "Real login failed.");
+    return false;
+  }
+
+  showMessage("Real auth provider hook is missing. Add your Firebase/Supabase integration.");
+  return false;
+};
+
+const year = document.getElementById("year");
+if (year) year.textContent = new Date().getFullYear();
+
+document.getElementById("demoUnlock")?.addEventListener("click", () => {
+  setPremiumState(true);
+  updateUserBadge();
+  showMessage("Premium demo access enabled.");
+});
+
+document.getElementById("loginBtn")?.addEventListener("click", openLoginModal);
+document.getElementById("closeLoginModal")?.addEventListener("click", closeLoginModal);
+document.getElementById("logoutBtn")?.addEventListener("click", logout);
+
+document.querySelectorAll(".mode-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    setAuthMode(button.dataset.mode || "demo");
+  });
+});
+
+document.getElementById("loginForm")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
+
+  const selectedMode = getStoredMode();
+  let ok = false;
+
+  if (selectedMode === "real") {
+    ok = await handleRealLogin(email, password);
+  } else {
+    ok = handleDemoLogin(email, password);
+  }
+
+  if (!ok) return;
+
   closeLoginModal();
   document.getElementById("loginForm").reset();
-  showMessage(`Welcome, ${email}. Demo login successful.`);
+  showMessage(
+    selectedMode === "real"
+      ? `Welcome, ${email}. Real auth flow is ready.`
+      : `Welcome, ${email}. Demo login successful.`
+  );
 });
 
 document.getElementById("loginModal")?.addEventListener("click", (event) => {
@@ -132,4 +257,6 @@ document.querySelectorAll("[data-plan]").forEach((button) => {
   button.addEventListener("click", () => openCheckout(button.dataset.plan));
 });
 
+appConfig.mode = getStoredMode();
+setAuthMode(appConfig.mode);
 initPremiumState();
