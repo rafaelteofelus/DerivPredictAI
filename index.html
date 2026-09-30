@@ -17,217 +17,228 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Login Modal -->
-    <div class="modal-overlay hidden" id="loginModal">
-      <div class="modal-content">
-        <button class="modal-close" id="closeLoginModal">&times;</button>
-        <div class="modal-header">
-          <h2>Login to DerivPredictAI</h2>
-          <p>Access your premium trading signals</p>
-        </div>
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required />
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required />
-          </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%">Sign in</button>
-          <p class="form-note">Demo mode: any email/password works</p>
-        </form>
+    <div class="app-shell">
+      <div class="mode-toggle" aria-label="Authentication mode switcher">
+        <button class="mode-btn active" data-mode="demo" aria-pressed="true">Demo Mode</button>
+        <button class="mode-btn" data-mode="real" aria-pressed="false">Real Auth</button>
       </div>
+
+      <div class="provider-badge" id="providerStatus">Demo authentication enabled</div>
+
+      <div class="modal-overlay hidden" id="loginModal">
+        <div class="modal-content">
+          <button class="modal-close" id="closeLoginModal" aria-label="Close login dialog">&times;</button>
+          <div class="modal-header">
+            <h2>Login to DerivPredictAI</h2>
+            <p id="authModeText">Demo login: any valid email/password works</p>
+          </div>
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Sign in</button>
+            <p class="form-note">Use Demo mode for testing. Real mode requires Supabase/Firebase setup.</p>
+          </form>
+        </div>
+      </div>
+
+      <header class="topbar">
+        <div class="container nav">
+          <div class="brand">
+            <span class="brand-mark">D</span>
+            <span>DerivPredictAI</span>
+          </div>
+          <nav>
+            <a href="#features">Features</a>
+            <a href="#signals">Signals</a>
+            <a href="#pricing">Pricing</a>
+          </nav>
+          <div class="nav-actions">
+            <button class="btn btn-ghost" id="demoUnlock">Demo Premium</button>
+            <button class="btn btn-primary" id="loginBtn">Login</button>
+            <button class="btn btn-secondary hidden" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="user-badge hidden" id="userBadge">Not signed in</div>
+
+      <main>
+        <section class="hero">
+          <div class="container hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow">AI market intelligence</span>
+              <h1>Trade smarter with predictive signals.</h1>
+              <p>
+                DerivPredictAI helps traders spot momentum shifts with AI-driven signals,
+                RSI and EMA analysis, and real-time market summaries.
+              </p>
+              <div class="cta-row">
+                <a href="#pricing" class="btn btn-primary">See pricing</a>
+                <a href="#signals" class="btn btn-secondary">View signals</a>
+              </div>
+              <ul class="stats">
+                <li><strong>92%</strong><span>Signal confidence</span></li>
+                <li><strong>24/7</strong><span>Market monitoring</span></li>
+                <li><strong>3 min</strong><span>Avg. signal refresh</span></li>
+              </ul>
+            </div>
+
+            <div class="signal-panel">
+              <div class="signal-header">
+                <span class="live-dot"></span>
+                <span>Live Market Pulse</span>
+              </div>
+              <div class="asset-card">
+                <div>
+                  <p class="label">BTC/USD</p>
+                  <h3>$61,420.18</h3>
+                </div>
+                <span class="trend up">+2.64%</span>
+              </div>
+              <div class="mini-grid">
+                <div>
+                  <span>RSI</span>
+                  <strong>63.8</strong>
+                </div>
+                <div>
+                  <span>EMA 20</span>
+                  <strong>Bullish</strong>
+                </div>
+                <div>
+                  <span>Trend</span>
+                  <strong>Up</strong>
+                </div>
+                <div>
+                  <span>Signal</span>
+                  <strong>BUY</strong>
+                </div>
+              </div>
+              <div class="signal-note">
+                <span class="note-badge">AI signal</span>
+                <p>Momentum remains strong as price holds above the 20 EMA.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" class="section">
+          <div class="container">
+            <div class="section-heading">
+              <span class="eyebrow">Why traders choose us</span>
+              <h2>Built for decision support and disciplined execution.</h2>
+            </div>
+            <div class="feature-grid">
+              <article class="feature-card">
+                <div class="icon">📈</div>
+                <h3>Predictive Price Signals</h3>
+                <p>Use AI-generated BUY/SELL alerts to spot market opportunities earlier.</p>
+              </article>
+              <article class="feature-card">
+                <div class="icon">🧠</div>
+                <h3>RSI & EMA Analytics</h3>
+                <p>Track momentum, trend quality, and reversals using core technical indicators.</p>
+              </article>
+              <article class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Premium Access</h3>
+                <p>Gate advanced analysis and insights behind an easy subscription model.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="signals" class="section muted">
+          <div class="container">
+            <div class="section-heading">
+              <span class="eyebrow">Signal dashboard</span>
+              <h2>See what premium access unlocks.</h2>
+            </div>
+
+            <div class="dashboard">
+              <div class="dashboard-card locked" id="premiumLock">
+                <div class="lock-header">
+                  <span>Premium dashboard</span>
+                  <span class="status-pill">Locked</span>
+                </div>
+                <p>Upgrade to unlock live signals, confidence scoring, and private market summaries.</p>
+                <button class="btn btn-primary" data-plan="starter">Unlock access</button>
+              </div>
+
+              <div class="dashboard-card premium-panel hidden" id="premiumPanel">
+                <div class="lock-header">
+                  <span>Premium dashboard</span>
+                  <span class="status-pill success">Unlocked</span>
+                </div>
+                <ul>
+                  <li>Trend continuation: <strong>Strong Bullish</strong></li>
+                  <li>Confidence score: <strong>88 / 100</strong></li>
+                  <li>Risk guidance: <strong>Moderate</strong></li>
+                  <li>Suggested action: <strong>Buy pullback / Protect with stop</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" class="section">
+          <div class="container">
+            <div class="section-heading">
+              <span class="eyebrow">Simple pricing</span>
+              <h2>Choose the plan that matches your trading workflow.</h2>
+            </div>
+
+            <div class="pricing-grid">
+              <article class="pricing-card">
+                <span class="plan-name">Starter</span>
+                <div class="price">$9<span>/mo</span></div>
+                <ul>
+                  <li>Basic signal alerts</li>
+                  <li>Daily market summary</li>
+                  <li>RSI snapshot</li>
+                </ul>
+                <button class="btn btn-secondary" data-plan="starter">Choose Starter</button>
+              </article>
+
+              <article class="pricing-card featured">
+                <span class="plan-badge">Most popular</span>
+                <span class="plan-name">Pro</span>
+                <div class="price">$29<span>/mo</span></div>
+                <ul>
+                  <li>AI signal dashboard</li>
+                  <li>EMA + RSI analytics</li>
+                  <li>Priority alerts</li>
+                </ul>
+                <button class="btn btn-primary" data-plan="pro">Choose Pro</button>
+              </article>
+
+              <article class="pricing-card">
+                <span class="plan-name">Elite</span>
+                <div class="price">$69<span>/mo</span></div>
+                <ul>
+                  <li>Full premium access</li>
+                  <li>Detailed trade notes</li>
+                  <li>Private market intel</li>
+                </ul>
+                <button class="btn btn-secondary" data-plan="elite">Choose Elite</button>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="container footer-inner">
+          <p>© <span id="year"></span> DerivPredictAI</p>
+          <p>Educational and informational use only.</p>
+        </div>
+      </footer>
     </div>
-
-    <header class="topbar">
-      <div class="container nav">
-        <div class="brand">
-          <span class="brand-mark">D</span>
-          <span>DerivPredictAI</span>
-        </div>
-        <nav>
-          <a href="#features">Features</a>
-          <a href="#signals">Signals</a>
-          <a href="#pricing">Pricing</a>
-        </nav>
-        <div class="nav-actions">
-          <button class="btn btn-ghost" id="demoUnlock">Demo Premium</button>
-          <button class="btn btn-primary" id="loginBtn">Login</button>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <section class="hero">
-        <div class="container hero-grid">
-          <div class="hero-copy">
-            <span class="eyebrow">AI market intelligence</span>
-            <h1>Trade smarter with predictive signals.</h1>
-            <p>
-              DerivPredictAI helps traders spot momentum shifts with AI-driven signals,
-              RSI and EMA analysis, and real-time market summaries.
-            </p>
-            <div class="cta-row">
-              <a href="#pricing" class="btn btn-primary">See pricing</a>
-              <a href="#signals" class="btn btn-secondary">View signals</a>
-            </div>
-            <ul class="stats">
-              <li><strong>92%</strong><span>Signal confidence</span></li>
-              <li><strong>24/7</strong><span>Market monitoring</span></li>
-              <li><strong>3 min</strong><span>Avg. signal refresh</span></li>
-            </ul>
-          </div>
-
-          <div class="signal-panel">
-            <div class="signal-header">
-              <span class="live-dot"></span>
-              <span>Live Market Pulse</span>
-            </div>
-            <div class="asset-card">
-              <div>
-                <p class="label">BTC/USD</p>
-                <h3>$61,420.18</h3>
-              </div>
-              <span class="trend up">+2.64%</span>
-            </div>
-            <div class="mini-grid">
-              <div>
-                <span>RSI</span>
-                <strong>63.8</strong>
-              </div>
-              <div>
-                <span>EMA 20</span>
-                <strong>Bullish</strong>
-              </div>
-              <div>
-                <span>Trend</span>
-                <strong>Up</strong>
-              </div>
-              <div>
-                <span>Signal</span>
-                <strong>BUY</strong>
-              </div>
-            </div>
-            <div class="signal-note">
-              <span class="note-badge">AI signal</span>
-              <p>Momentum remains strong as price holds above the 20 EMA.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="section">
-        <div class="container">
-          <div class="section-heading">
-            <span class="eyebrow">Why traders choose us</span>
-            <h2>Built for decision support and disciplined execution.</h2>
-          </div>
-          <div class="feature-grid">
-            <article class="feature-card">
-              <div class="icon">📈</div>
-              <h3>Predictive Price Signals</h3>
-              <p>Use AI-generated BUY/SELL alerts to spot market opportunities earlier.</p>
-            </article>
-            <article class="feature-card">
-              <div class="icon">🧠</div>
-              <h3>RSI & EMA Analytics</h3>
-              <p>Track momentum, trend quality, and reversals using core technical indicators.</p>
-            </article>
-            <article class="feature-card">
-              <div class="icon">🔒</div>
-              <h3>Premium Access</h3>
-              <p>Gate advanced analysis and insights behind an easy subscription model.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="signals" class="section muted">
-        <div class="container">
-          <div class="section-heading">
-            <span class="eyebrow">Signal dashboard</span>
-            <h2>See what premium access unlocks.</h2>
-          </div>
-
-          <div class="dashboard">
-            <div class="dashboard-card locked" id="premiumLock">
-              <div class="lock-header">
-                <span>Premium dashboard</span>
-                <span class="status-pill">Locked</span>
-              </div>
-              <p>Upgrade to unlock live signals, confidence scoring, and private market summaries.</p>
-              <button class="btn btn-primary" data-plan="starter">Unlock access</button>
-            </div>
-
-            <div class="dashboard-card premium-panel hidden" id="premiumPanel">
-              <div class="lock-header">
-                <span>Premium dashboard</span>
-                <span class="status-pill success">Unlocked</span>
-              </div>
-              <ul>
-                <li>Trend continuation: <strong>Strong Bullish</strong></li>
-                <li>Confidence score: <strong>88 / 100</strong></li>
-                <li>Risk guidance: <strong>Moderate</strong></li>
-                <li>Suggested action: <strong>Buy pullback / Protect with stop</strong></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" class="section">
-        <div class="container">
-          <div class="section-heading">
-            <span class="eyebrow">Simple pricing</span>
-            <h2>Choose the plan that matches your trading workflow.</h2>
-          </div>
-
-          <div class="pricing-grid">
-            <article class="pricing-card">
-              <span class="plan-name">Starter</span>
-              <div class="price">$9<span>/mo</span></div>
-              <ul>
-                <li>Basic signal alerts</li>
-                <li>Daily market summary</li>
-                <li>RSI snapshot</li>
-              </ul>
-              <button class="btn btn-secondary" data-plan="starter">Choose Starter</button>
-            </article>
-
-            <article class="pricing-card featured">
-              <span class="plan-badge">Most popular</span>
-              <span class="plan-name">Pro</span>
-              <div class="price">$29<span>/mo</span></div>
-              <ul>
-                <li>AI signal dashboard</li>
-                <li>EMA + RSI analytics</li>
-                <li>Priority alerts</li>
-              </ul>
-              <button class="btn btn-primary" data-plan="pro">Choose Pro</button>
-            </article>
-
-            <article class="pricing-card">
-              <span class="plan-name">Elite</span>
-              <div class="price">$69<span>/mo</span></div>
-              <ul>
-                <li>Full premium access</li>
-                <li>Detailed trade notes</li>
-                <li>Private market intel</li>
-              </ul>
-              <button class="btn btn-secondary" data-plan="elite">Choose Elite</button>
-            </article>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="container footer-inner">
-        <p>© <span id="year"></span> DerivPredictAI</p>
-        <p>Educational and informational use only.</p>
-      </div>
-    </footer>
 
     <script src="script.js"></script>
   </body>
