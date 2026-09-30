@@ -17,10 +17,12 @@ const planNames = {
   elite: "Elite",
 };
 
+// These are demo Stripe test links. Replace them with your own Stripe Payment Links
+// from Stripe Dashboard when you are ready to accept real payments.
 const planUrls = {
-  starter: "",
-  pro: "",
-  elite: "",
+  starter: "https://buy.stripe.com/test_00g4jF6mJcOQ4M83cc",
+  pro: "https://buy.stripe.com/test_14k4jF8K1aU4E2s9aa",
+  elite: "https://buy.stripe.com/test_5kA4jF3PL7B0C4Q8ac",
 };
 
 function safeRead(key, fallback) {
@@ -191,7 +193,7 @@ function openCheckout(plan) {
 
   const url = planUrls[plan];
   if (url) {
-    window.location.assign(url);
+    window.open(url, "_blank", "noopener,noreferrer");
     return;
   }
 
