@@ -1,4 +1,5 @@
 const premiumKey = "derivpredictai-premium";
+const userKey = "derivpredictai-user";
 
 const planUrls = {
   starter: "https://buy.stripe.com/test_00g4jF6mJcOQ4M83cc",
@@ -37,6 +38,20 @@ const openCheckout = (plan) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+const openLoginModal = () => {
+  const modal = document.getElementById("loginModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+  }
+};
+
+const closeLoginModal = () => {
+  const modal = document.getElementById("loginModal");
+  if (modal) {
+    modal.classList.add("hidden");
+  }
+};
+
 document.getElementById("year").textContent = new Date().getFullYear();
 
 const demoUnlockBtn = document.getElementById("demoUnlock");
@@ -49,7 +64,39 @@ if (demoUnlockBtn) {
 const loginBtn = document.getElementById("loginBtn");
 if (loginBtn) {
   loginBtn.addEventListener("click", () => {
-    alert("Demo login: connect to your auth provider or a real login service before publishing.");
+    openLoginModal();
+  });
+}
+
+const closeLoginModalBtn = document.getElementById("closeLoginModal");
+if (closeLoginModalBtn) {
+  closeLoginModalBtn.addEventListener("click", () => {
+    closeLoginModal();
+  });
+}
+
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (email && password) {
+      localStorage.setItem(userKey, JSON.stringify({ email, loggedIn: true }));
+      setPremiumState(true);
+      closeLoginModal();
+      loginForm.reset();
+    }
+  });
+}
+
+const modal = document.getElementById("loginModal");
+if (modal) {
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeLoginModal();
+    }
   });
 }
 
