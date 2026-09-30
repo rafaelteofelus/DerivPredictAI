@@ -17,6 +17,29 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Login Modal -->
+    <div class="modal-overlay hidden" id="loginModal">
+      <div class="modal-content">
+        <button class="modal-close" id="closeLoginModal">&times;</button>
+        <div class="modal-header">
+          <h2>Login to DerivPredictAI</h2>
+          <p>Access your premium trading signals</p>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">Sign in</button>
+          <p class="form-note">Demo mode: any email/password works</p>
+        </form>
+      </div>
+    </div>
+
     <header class="topbar">
       <div class="container nav">
         <div class="brand">
